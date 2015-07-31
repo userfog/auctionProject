@@ -32,6 +32,8 @@
 	</div>
 
 <script type="text/javascript">
+	
+$(document).ready(function(){
 
 	// Given a CSV with each column representing a person's alphabetically (by name of items)
 	// listed preferences
@@ -208,9 +210,8 @@
 			.data(function(x){return x.values}).
 			enter().append("p")
 			.text(function(x){return "Item: " + x.item + " Utility: " + x.marginalUtil});
-
-
 	});
+});
 </script>
 </body>
 </html>
