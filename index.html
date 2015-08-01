@@ -3,6 +3,20 @@
 
 <head>
 
+<style type="text/css">
+.buttonText {
+	background  : none;
+	border: none;
+	cursor  : pointer;
+	font-size   : 12px;
+	color   : #000;
+	margin      : 0px;
+	padding     : 0px;
+
+}
+
+</style>
+
 <script type="text/javascript" src="./js/d3.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="./js/d3.tip.js"></script>
@@ -24,47 +38,63 @@
 <h2>Auction Helper</h2>
 <div class="container" style="margin-left: 25px;">
 	<div class="row">
-		<h4>Instructions</h4>
-			<ol>
+			<div style="display: inline;"> 
+			<h4>Instructions (<button class="toggle buttonText">Hide</button>) </h4> 
+			</div>
+			<ol class="toggle-list">
 				<li>
-					Data is expected in CSV format in which the first column is titled "Names" and all column headers are unique.
+					Data is expected in TSV (tab separated value) format in which the first column is titled "Names" and all column headers are unique.
+					<ul>
+						<li>
+						The easiest way to do this is to type up your auction in excel, then copy and paste from excel into the text box below.
+						</li>
+					</ul>
 				</li>
 				<li>
 					Additional columns should have auction participant names as headers and rows corresponding to bets. Bets are normalized out of $100.
 				</li>
 				<li> 
-					Here is an example input:
-				<pre>Names,Adam,Melanee,Jade,Chloe
-Kitchen Table,1000,1,1,2
-Chairs,1,90,1,1
-TV,1,1,90,1
-Sofa,1,1,2,90
-Painting,1,1,1,1
-Forks,1,1,1,1
-Shower Curtain,1,2,1,1
-Flooring,1,1,1,1
-Fridge Items,1,1,1,1
-Art Supplies,2,1,1,1
+					Here is an example input in exel and in TSV:
+					<div class="row">
+						<div class="col-md-4">
+							<img src="./example.png">
+						</div>
+						<div class="col-md-4">
+							<pre>Names	Adam	Melanee	Jade	Chloe
+Kitchen Table	1000	1	1	2
+Chairs	1	90	1	1
+TV	1	1	90	1
+Sofa	1	1	2	90
+Painting	1	1	1	1
+Forks	1	1	1	1
+Shower Curtain	1	2	1	1
+Flooring	1	1	1	1
+Fridge Items	1	1	1	1
+Art Supplies	2	1	1	1
 				</pre>
+						</div>
+					</div>
 				</li>
 				<li>
 					Click "Run Auction".
 				</li>
 			</ol>
 	</div>
+	
 
 	<div class="row data" style="margin-top: 10px">
 		<div class="col-md-6">
 			<textarea rows="4" cols="50"></textarea>
-			<button>Run Auction</button>
+			<button class="run">Run Auction</button>
 		</div>
 	</div>
 
 	<div class="row" style="margin-top: 10px;">
 		<h4 class="results clearable"></h4>
-		<div class="col-md-6 stackedBar clearable"></div>
-		<!-- <div class="col-md-6 randomBar clearable"></div> -->
-		<div class="col-md-6 output clearable">
+		<div class="row">
+			<div class="col-md-6 stackedBar clearable"></div>
+			<!-- <div class="col-md-6 randomBar clearable"></div> -->
+			<div class="col-md-6 output clearable"></div>
 		</div>
 	</div>
 
@@ -75,7 +105,15 @@ Art Supplies,2,1,1,1
 	
 $(document).ready(function(){
 
-	d3.select("button").on("click", function(){
+	d3.select(".toggle").on("click", function(){
+		var that = $(this);
+		$(".toggle-list").slideToggle(function() { 
+			$(this).is(":visible") ? that.text("Hide") : that.text("Show");
+        });
+		return false;
+	});
+
+	d3.select(".run").on("click", function(){
 
 	d3.selectAll(".clearable").selectAll("*").remove()
 
@@ -85,7 +123,7 @@ $(document).ready(function(){
 	// listed preferences
 	var data = [];
 
-	d3.csv.parse(textput, function(x){ data.push(x)});
+	d3.tsv.parse(textput, function(x){ data.push(x)});
 
 	if(!data || !data.length) return;
 
@@ -250,12 +288,7 @@ $(document).ready(function(){
 		return winners;
 	}
 	
-
-
 	heighestFirst();
-
-
-
 
 	var winners = algo(data.length);
 
