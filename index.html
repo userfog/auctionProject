@@ -21,195 +21,270 @@
 </head>
 
 <body>
-	<h2>Auction Helper</h2>
-	<div class="container">
-		<div class="row" style="margin: 25px;">
-			<div class="col-md-6 stackedBar"></div>
-			<div class="col-md-6 randomBar"></div>
-		</div>
-		<div class="row output" style="margin: 25px;">
+<h2>Auction Helper</h2>
+<div class="container" style="margin-left: 25px;">
+	<div class="row">
+		<h4>Instructions</h4>
+			<ol>
+				<li>
+					Data is expected in CSV format in which the first column is titled "Names" and all column headers are unique.
+				</li>
+				<li>
+					Additional columns should have auction participant names as headers and rows corresponding to bets. Bets are normalized out of $100.
+				</li>
+				<li> 
+					Here is an example input:
+				<pre>Names,Adam,Melanee,Jade,Chloe
+Kitchen Table,1000,1,1,2
+Chairs,1,90,1,1
+TV,1,1,90,1
+Sofa,1,1,2,90
+Painting,1,1,1,1
+Forks,1,1,1,1
+Shower Curtain,1,2,1,1
+Flooring,1,1,1,1
+Fridge Items,1,1,1,1
+Art Supplies,2,1,1,1
+				</pre>
+				</li>
+				<li>
+					Click "Run Auction".
+				</li>
+			</ol>
+	</div>
+
+	<div class="row data" style="margin-top: 10px">
+		<div class="col-md-6">
+			<textarea rows="4" cols="50"></textarea>
+			<button>Run Auction</button>
 		</div>
 	</div>
+
+	<div class="row" style="margin-top: 10px;">
+		<h4 class="results clearable"></h4>
+		<div class="col-md-6 stackedBar clearable"></div>
+		<!-- <div class="col-md-6 randomBar clearable"></div> -->
+		<div class="col-md-6 output clearable">
+		</div>
+	</div>
+
+
+</div>
 
 <script type="text/javascript">
 	
 $(document).ready(function(){
 
-	// Given a CSV with each column representing a person's alphabetically (by name of items)
+	d3.select("button").on("click", function(){
+
+	d3.selectAll(".clearable").selectAll("*").remove()
+
+	var textput = $("textarea").val()
+
+		// Given a CSV with each column representing a person's alphabetically (by name of items)
 	// listed preferences
-	d3.csv("./target.csv", function(data){
+	var data = [];
 
-		if(!data.length) return;
+	d3.csv.parse(textput, function(x){ data.push(x)});
 
-		var currentUtilities = {}
+	if(!data || !data.length) return;
 
-		Object.keys(data[0]).forEach(function(el, index, arr){
-			currentUtilities[el] = 0;
+	var totals = {}
+	data.forEach(function(rows){
+	 	Object.keys(rows).forEach(function(el, i, arr){
+	 		if(el != "Names") totals[el] = Number(rows[el]) + totals[el] || Number(rows[el])
+	 	});
+	});
+
+	data.forEach(function(rows, i, arr){
+	 	Object.keys(rows).forEach(function(el, i, arr){
+	 		if(el != "Names") rows[el] = Number(rows[el]) / totals[el] * 100;
+	 	});
+	});
+
+	debugger;
+
+	var currentUtilities = {}
+	
+	Object.keys(data[0]).forEach(function(el, index, arr){
+		currentUtilities[el] = 0;
+	});
+
+	for(var i = 0; i < data.length; i++){
+		Object.keys(data[i]).forEach(function(el, index, arr){
+			if(el != "Names") data[i][el] = Number(data[i][el]);
+		})
+	}
+
+	var heighestFirst = function(){
+		var order = [];
+		data.sort(function(a,b) {
+			var sumA = 0;
+			var sumB = 0;
+			for(var i in a){
+				if(i != "Names"){
+					sumA += a[i];
+					sumB += b[i]
+				}
+			}
+			return sumB - sumA;
+		});
+	}
+
+	var algo = function(numSteps){
+		var winners = []
+
+		var nonNames = data.map(function(el,i, arr){
+			var exclude = {};
+			for(j in el){
+				if(j != "Names") {
+					exclude[j] = el[j]
+				};
+			}
+			return exclude;
 		});
 
-		for(var i = 0; i < data.length; i++){
-			Object.keys(data[i]).forEach(function(el, index, arr){
-				if(el != "Names") data[i][el] = Number(data[i][el]);
-			})
+		var names = data.map(function(el, i, arr){ return el.Names });
+
+
+		for(var i = 0; i < numSteps; i++){
+			var winner = updateCurrentUtility(i, nonNames, names);
+			winners.push(winner);
 		}
+		return winners;
+	}
 
-		var heighestFirst = function(){
-			var order = [];
-			data.sort(function(a,b) {
-				var sumA = 0;
-				var sumB = 0;
-				for(var i in a){
-					if(i != "Names"){
-						sumA += a[i];
-						sumB += b[i]
-					}
-				}
-				return sumB - sumA;
-			});
-		}
-
-		var algo = function(numSteps){
-			var winners = []
-
-			var nonNames = data.map(function(el,i, arr){
-				var exclude = {};
-				for(j in el){
-					if(j != "Names") {
-						exclude[j] = el[j]
-					};
-				}
-				return exclude;
-			});
-
-			var names = data.map(function(el, i, arr){ return el.Names });
-
-
-			for(var i = 0; i < numSteps; i++){
-				var winner = updateCurrentUtility(i, nonNames, names);
-				winners.push(winner);
+	var tieBreaker = function(row, el1, el2, nonNames){
+		for(var i = row; i < data.length; i++){
+			if(nonNames[i][el1] == nonNames[i][el2]){
+				continue;
+			} else if(nonNames[i][el1] == nonNames[i][el2]){
+				return el2;
+			} else {
+				return el1;
 			}
-			return winners;
 		}
+		return Math.random() > .5 ? el1 : el2
+	}
 
-		var tieBreaker = function(row, el1, el2, nonNames){
-			for(var i = row; i < data.length; i++){
-				if(nonNames[i][el1] == nonNames[i][el2]){
-					continue;
-				} else if(nonNames[i][el1] == nonNames[i][el2]){
-					return el2;
-				} else {
-					return el1;
+	var redistributeWinnings = function(row, exclude, nonNames){
+		for(var el in data[0]){
+			if(el == exclude){
+			} else{
+				var remainingWeight = 0;
+				var currWeight = nonNames[row][el];
+
+				for(var k = row+1; k < nonNames.length; k++){
+					remainingWeight += nonNames[k][el];
 				}
-			}
-			return Math.random() > .5 ? el1 : el2
-		}
 
-		var redistributeWinnings = function(row, exclude, nonNames){
-			for(var el in data[0]){
-				if(el == exclude){
-				} else{
-					var remainingWeight = 0;
-					var currWeight = nonNames[row][el];
-
-					for(var k = row+1; k < nonNames.length; k++){
-						remainingWeight += nonNames[k][el];
-					}
-
-					for(var k = row+1; k < data.length; k++){
-						nonNames[k][el] += currWeight * (nonNames[k][el]/remainingWeight);
-					}
+				for(var k = row+1; k < data.length; k++){
+					nonNames[k][el] += currWeight * (nonNames[k][el]/remainingWeight);
 				}
 			}
 		}
+	}
 
-		var updateCurrentUtility = function(row, nonNames, names){
-			var oneStepAheadUtil = {}
-			Object.keys(nonNames[row]).forEach(function(el, index, arr){
-				oneStepAheadUtil[el] = currentUtilities[el] + nonNames[row][el];
-			});
+	var updateCurrentUtility = function(row, nonNames, names){
+		var oneStepAheadUtil = {}
+		Object.keys(nonNames[row]).forEach(function(el, index, arr){
+			oneStepAheadUtil[el] = currentUtilities[el] + nonNames[row][el];
+		});
 
-			var marginalUtil = {}
-			Object.keys(nonNames[row]).forEach(function(el, index, arr){
-				marginalUtil[el] = Math.sqrt(oneStepAheadUtil[el]) - Math.sqrt(currentUtilities[el]);
-			});
+		var marginalUtil = {}
+		Object.keys(nonNames[row]).forEach(function(el, index, arr){
+			marginalUtil[el] = Math.sqrt(oneStepAheadUtil[el]) - Math.sqrt(currentUtilities[el]);
+		});
 
-			var maxUtil = {key: "", value: 0};
-			for(i in marginalUtil){
-				if(maxUtil["value"] < marginalUtil[i]){
+		var maxUtil = {key: "", value: 0};
+		for(i in marginalUtil){
+			if(maxUtil["value"] < marginalUtil[i]){
+				maxUtil["key"] = i;
+				maxUtil["value"] = marginalUtil[i];
+			} else if(maxUtil["value"] == marginalUtil[i]){
+				if(maxUtil["key"] == ""){
 					maxUtil["key"] = i;
-					maxUtil["value"] = marginalUtil[i];
-				} else if(maxUtil["value"] == marginalUtil[i]){
-					if(maxUtil["key"] == ""){
-						maxUtil["key"] = i;
-					} else {
-						maxUtil["key"] = tieBreaker(row, maxUtil["key"], i, nonNames);
-					}
+				} else {
+					maxUtil["key"] = tieBreaker(row, maxUtil["key"], i, nonNames);
 				}
 			}
-
-			currentUtilities[maxUtil["key"]] = oneStepAheadUtil[maxUtil["key"]];
-
-			redistributeWinnings(row, maxUtil["key"], nonNames);
-
-			return {"key": maxUtil["key"], "marginalUtil": data[row][maxUtil["key"]], "item": names[row]};
 		}
 
-		var randomAlgo = function(numSteps){
+		currentUtilities[maxUtil["key"]] = oneStepAheadUtil[maxUtil["key"]];
 
-			var winners = []
+		redistributeWinnings(row, maxUtil["key"], nonNames);
 
-			var nonNames = data.map(function(el,i, arr){
-				var exclude = {};
-				for(j in el){
-					if(j != "Names") {
-						exclude[j] = el[j]
-					};
-				}
-				return exclude;
-			});
+		return {"key": maxUtil["key"], "marginalUtil": data[row][maxUtil["key"]], "item": names[row]};
+	}
 
-			var names = data.map(function(el, i, arr){ return el.Names });
+	var randomAlgo = function(numSteps){
 
+		var winners = []
 
-			for(var i = 0; i < numSteps; i++){
-
-				var wIndex = Math.round(Math.random() * Object.keys(nonNames[i]).length)
-
-				var key = Object.keys(nonNames[i])[wIndex];
-
-				var util = nonNames[i][key];
-
-				var winner = {"key": key, "marginalUtil": util, item: names[i]};
-
-				winners.push(winner);
+		var nonNames = data.map(function(el,i, arr){
+			var exclude = {};
+			for(j in el){
+				if(j != "Names") {
+					exclude[j] = el[j]
+				};
 			}
+			return exclude;
+		});
 
-			return winners;
+		var names = data.map(function(el, i, arr){ return el.Names });
+
+
+		for(var i = 0; i < numSteps; i++){
+
+			var wIndex = Math.round(Math.random() * Object.keys(nonNames[i]).length)
+
+			var key = Object.keys(nonNames[i])[wIndex];
+
+			var util = nonNames[i][key];
+
+			var winner = {"key": key, "marginalUtil": util, item: names[i]};
+
+			winners.push(winner);
 		}
-		
+
+		return winners;
+	}
+	
 
 
-		heighestFirst();
+	heighestFirst();
 
-		var winners = algo(data.length);
-		var myStackedBar = new StackedBar(d3.select(".stackedBar"), winners, true, "Utilis: Custom Algorithm");
 
-		var rands = randomAlgo(data.length);
-		var myStackedBar2 = new StackedBar(d3.select(".randomBar"), rands, true, "Utilis: Random Algorithm");
 
-		var nested_data = d3.nest()
-			.key(function(d) { return d.key; })
-			.entries(winners);
 
-		d3.select(".output").selectAll(".totalUtil")
-			.data(nested_data).enter()
-			.append("div")
-			.attr("class", "col-md-2")
-			.append("b").text(function(x) {return x.key})
-			.selectAll(".infos")
-			.data(function(x){return x.values}).
-			enter().append("p")
-			.text(function(x){return "Item: " + x.item + " Utility: " + x.marginalUtil});
+	var winners = algo(data.length);
+
+	d3.select(".results")
+		.text("Results");
+
+
+	var myStackedBar = new StackedBar(d3.select(".stackedBar"), winners, true, "Utilis: Custom Algorithm");
+
+	// var rands = randomAlgo(data.length);
+	// var myStackedBar2 = new StackedBar(d3.select(".randomBar"), rands, true, "Utilis: Random Algorithm");
+
+	var nested_data = d3.nest()
+		.key(function(d) { return d.key; })
+		.entries(winners);
+
+	d3.select(".output")
+	.append("h4").text("Winnings");
+
+	d3.select(".output")
+	.selectAll(".totalUtil")
+		.data(nested_data).enter()
+		.append("div")
+		.attr("class", "col-md-3")
+		.append("b").text(function(x) {return x.key})
+		.selectAll(".infos")
+		.data(function(x){return x.values}).
+		enter().append("p")
+		.text(function(x){return "Item: " + x.item + " Utility: " + d3.round(x.marginalUtil, 2)});
 	});
 });
 </script>
