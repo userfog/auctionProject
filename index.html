@@ -35,18 +35,20 @@
 </head>
 
 <body style="background: #CCCCCC;">
-<h2 style="margin-left: 5px; foreground: #fBfBfB; margin-left:105px; margin-right: auto;">Auction Helper</h2>
-<div class="container" style="padding-left: 30px; padding-right: 30px; background:#fBfBfB; border-radius: 10px; margin-left:100px; margin-right: auto; height:200%;">
+<div class="container" style="margin-left:auto; margin-right: auto;">
+	<h2 style="margin-left:10px; foreground: #fBfBfB;">Auction Helper</h2>
+<div>
+<div class="container" style="padding-left: 30px; padding-right: 30px; background:#fBfBfB; border-radius: 10px; margin-left:auto; margin-right: auto; height:200%;">
 	<div class="row">
 			<div style="display: inline;"> 
 			<h3>Enter Data (<button class="toggle buttonText">Hide Instructions</button>) </h3> 
 			</div>
 			<ol class="toggle-list">
 				<li>
-					In Excel (or a google doc) specify the items being given away in a column called "Names".
+					In Excel (or a google doc) specify the items being given in a column called "Names".
 				</li>
 				<li>
-					Add an additional column for each auction participant. Include each participants bids as rows. Bids for each participant will be normalized to $100.
+					Add an additional column for each participant. Include each participants bids as rows. Bids for each participant will be normalized to $100.
 				</li>
 				<li>
 					Copy and paste the spreadsheet into the text box below:
@@ -79,11 +81,12 @@ Side Table	1	1	1	1</pre>
 	
 
 	<div class="row data" style="margin-top: 10px">
-		<div class="col-md-6">
-			<textarea rows="4" cols="50"></textarea>
-			<button class="run">Run Auction</button>
-		</div>
+		<textarea rows="4" cols="50"></textarea>
 	</div>
+	<div class="row">
+		<button class="run">Run Auction</button>
+	</div>
+
 
 	<div class="row" style="margin-top: 10px;">
 		<div class="row">
@@ -312,7 +315,7 @@ $(document).ready(function(){
 	utils.selectAll(".infos")
 		.data(function(x){return x.values}).
 		enter().append("div")
-		.html(function(x){return '<b style="display: inline;">Item:</b> ' + x.item + '<br><b style="display: inline;">Utils: </b><font style="background-color: yellow">' + d3.round(x.marginalUtil, 2) + "</font><br><br>"});
+		.html(function(x){return '<b style="display: inline;">Item:</b> ' + x.item + '<br><b style="display: inline;">Utils: </b><font style="background-color: #EECD86">' + d3.round(x.marginalUtil, 2) + "</font><br><br>"});
 	});
 });
 </script>
