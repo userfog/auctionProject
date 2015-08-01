@@ -94,11 +94,10 @@ Art Supplies	2	1	1	1
 	</div>
 
 	<div class="row" style="margin-top: 10px;">
-		<h3 class="results clearable"></h3>
 		<div class="row">
-			<div class="col-md-5 stackedBar clearable"></div>
+			<div class="col-md-6 stackedBar clearable"></div>
 			<!-- <div class="col-md-6 randomBar clearable"></div> -->
-			<div class="col-md-7 output clearable"></div>
+			<div class="col-md-6 output clearable"></div>
 		</div>
 	</div>
 
@@ -296,9 +295,8 @@ $(document).ready(function(){
 
 	var winners = algo(data.length);
 
-	d3.select(".results")
-		.text("Results");
-
+	d3.select(".stackedBar")
+		.append("h3").text("Results");
 
 	var myStackedBar = new StackedBar(d3.select(".stackedBar"), winners, true, "Utilis: Custom Algorithm");
 
@@ -310,7 +308,7 @@ $(document).ready(function(){
 		.entries(winners);
 
 	d3.select(".output")
-	.append("h3").text("Winnings");
+		.append("h3").text("Winnings");
 
 	var utils = d3.select(".output")
 	.selectAll(".totalUtil")
@@ -318,11 +316,11 @@ $(document).ready(function(){
 		.append("div")
 		.attr("class", "col-md-3");
 
-	utils.append("b").text(function(x) {return x.key})
+	utils.append("h4").text(function(x) {return x.key})
 	utils.selectAll(".infos")
 		.data(function(x){return x.values}).
 		enter().append("div")
-		.html(function(x){return "<h4>Item:</h4> " + x.item + '<br><span><h4">Utils:</h4><p>' + d3.round(x.marginalUtil, 2)});
+		.html(function(x){return '<b style="display: inline;">Item:</b> ' + x.item + '<br><b style="display: inline;">Utils: </b>' + d3.round(x.marginalUtil, 2) + "<br><br>"});
 	});
 });
 </script>
