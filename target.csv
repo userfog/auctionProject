@@ -1,11 +1,11 @@
-Names,Adam,Melanee,Jade,Chloe
-Kitchen Table,1000,1,1,2
-Chairs,1,90,1,1
-TV,1,1,90,1
-Sofa,1,1,2,90
-Painting,1,1,1,1
-Forks,1,1,1,1
-Shower Curtain,1,2,1,1
-Flooring,1,1,1,1
-Fridge Items,1,1,1,1
-Art Supplies,2,1,1,1
+Names	Adam	Melanee	Jade	Chloe
+Kitchen Table	90	1	1	2
+Chairs	1	90	1	1
+TV	1	1	90	1
+Sofa	1	1	2	90
+Painting	1	1	1	1
+Forks	1	1	1	1
+Shower Curtain	1	2	1	1
+Flooring	1	1	1	1
+Fridge Items	1	1	1	1
+Art Supplies	2	1	1	1

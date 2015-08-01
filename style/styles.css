@@ -1,6 +1,8 @@
  /* FONT: Lato; */
  @import url(https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,400italic,700italic,900italic);
 
+html,body { height:100%; }
+
 .axis text { font: 10px sans-serif; }
 .axis line,
 .axis path {
@@ -18,10 +20,9 @@
   height: 100vh;
 }
 
-.type path { 
-    stroke-width: 4;
-    fill: none;
-}
+.tick > text{
+  font-size: 18px;
+} 
 
 #breakdownVis { position: absolute; margin-top: : 40px; }
 #breakdownVis text { fill: white; }

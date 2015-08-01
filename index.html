@@ -34,50 +34,42 @@
 
 </head>
 
-<body style="background:#fBfBfB;">
-<h2 style="margin-left: 5px;">Auction Helper</h2>
-<div class="container" style="margin-left: 25px;">
+<body style="background: #CCCCCC;">
+<h2 style="margin-left: 5px; foreground: #fBfBfB; margin-left:105px; margin-right: auto;">Auction Helper</h2>
+<div class="container" style="padding-left: 30px; padding-right: 30px; background:#fBfBfB; border-radius: 10px; margin-left:100px; margin-right: auto; height:200%;">
 	<div class="row">
 			<div style="display: inline;"> 
 			<h3>Enter Data (<button class="toggle buttonText">Hide Instructions</button>) </h3> 
 			</div>
 			<ol class="toggle-list">
 				<li>
-					Data is expected in TSV (tab separated value) format in which the first column is titled "Names" and all column headers are unique.
-					<ul>
-						<li>
-						The easiest way to do this is to type up your auction in excel, then copy and paste it from excel into the text box below.
-						</li>
-					</ul>
+					In Excel (or a google doc) specify the items being given away in a column called "Names".
 				</li>
 				<li>
-					Additional columns should have auction participant names as headers and rows corresponding to bets. Bets are normalized out of $100.
+					Add an additional column for each auction participant. Include each participants bids as rows. Bids for each participant will be normalized to $100.
 				</li>
-				<li> 
-					Here is an example input in exel and in TSV:
-					<ul>
-						<li> Copy and paste the output into the text box to see how it works</li>
-					</ul>
-
+				<li>
+					Copy and paste the spreadsheet into the text box below:
+					<ul>Here is an example input from a spreadsheet:
 					<div class="row">
-						<div class="col-md-4">
+						<div class="col-md-5">
 							<pre>Names	Adam	Melanee	Jade	Chloe
-Kitchen Table	1000	1	1	2
-Chairs	1	90	1	1
-TV	1	1	90	1
-Sofa	1	1	2	90
-Painting	1	1	1	1
-Forks	1	1	1	1
-Shower Curtain	1	2	1	1
-Flooring	1	1	1	1
-Fridge Items	1	1	1	1
-Art Supplies	2	1	1	1
-				</pre>
+Lamps	10	900	90	2
+Chairs	9	800	1	1
+TV	8	700	1	1
+Family Room Sofa	7	600	1	90
+Blinds	6	500	1	1
+Kitchen Table	5	400	1	1
+Shower Curtain	4	300	1	1
+Bar Stools	3	200	1	1
+Cocktail Table	2	100	1	1
+Side Table	1	1	1	1</pre>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-5">
 							<img src="./example.png">
 						</div>
 					</div>
+					</ul>
 				</li>
 				<li>
 					Click "Run Auction".
@@ -320,7 +312,7 @@ $(document).ready(function(){
 	utils.selectAll(".infos")
 		.data(function(x){return x.values}).
 		enter().append("div")
-		.html(function(x){return '<b style="display: inline;">Item:</b> ' + x.item + '<br><b style="display: inline;">Utils: </b>' + d3.round(x.marginalUtil, 2) + "<br><br>"});
+		.html(function(x){return '<b style="display: inline;">Item:</b> ' + x.item + '<br><b style="display: inline;">Utils: </b><font style="background-color: yellow">' + d3.round(x.marginalUtil, 2) + "</font><br><br>"});
 	});
 });
 </script>
