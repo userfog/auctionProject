@@ -16,7 +16,7 @@ StackedBar = function(_parentElement, _data, _legendOn, _plotName) {
     this.displayData = [];
     this.plotName = _plotName
 
-    this.width = this.data.length > 2 ? 350 : 280;
+    this.width = this.data.length > 2 ? 450 : 280;
     // dimensions
     this.margin = {top: 40, right: 50, bottom: 100, left: 30},
     this.width = this.width - this.margin.left - this.margin.right;

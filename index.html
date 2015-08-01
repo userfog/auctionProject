@@ -16,7 +16,7 @@
 }
 
 </style>
-
+<meta http-equiv="content-type" content="text/html; charset=UTF8">
 <script type="text/javascript" src="./js/d3.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="./js/d3.tip.js"></script>
@@ -34,12 +34,12 @@
 
 </head>
 
-<body>
-<h2>Auction Helper</h2>
+<body style="background:#fBfBfB;">
+<h2 style="margin-left: 5px;">Auction Helper</h2>
 <div class="container" style="margin-left: 25px;">
 	<div class="row">
 			<div style="display: inline;"> 
-			<h4>Instructions (<button class="toggle buttonText">Hide</button>) </h4> 
+			<h3>Enter Data (<button class="toggle buttonText">Hide Instructions</button>) </h3> 
 			</div>
 			<ol class="toggle-list">
 				<li>
@@ -55,10 +55,11 @@
 				</li>
 				<li> 
 					Here is an example input in exel and in TSV:
+					<ul>
+						<li> Copy and paste the output into the text box to see how it works</li>
+					</ul>
+
 					<div class="row">
-						<div class="col-md-4">
-							<img src="./example.png">
-						</div>
 						<div class="col-md-4">
 							<pre>Names	Adam	Melanee	Jade	Chloe
 Kitchen Table	1000	1	1	2
@@ -72,6 +73,9 @@ Flooring	1	1	1	1
 Fridge Items	1	1	1	1
 Art Supplies	2	1	1	1
 				</pre>
+						</div>
+						<div class="col-md-4">
+							<img src="./example.png">
 						</div>
 					</div>
 				</li>
@@ -90,11 +94,11 @@ Art Supplies	2	1	1	1
 	</div>
 
 	<div class="row" style="margin-top: 10px;">
-		<h4 class="results clearable"></h4>
+		<h3 class="results clearable"></h3>
 		<div class="row">
-			<div class="col-md-6 stackedBar clearable"></div>
+			<div class="col-md-5 stackedBar clearable"></div>
 			<!-- <div class="col-md-6 randomBar clearable"></div> -->
-			<div class="col-md-6 output clearable"></div>
+			<div class="col-md-7 output clearable"></div>
 		</div>
 	</div>
 
@@ -108,7 +112,7 @@ $(document).ready(function(){
 	d3.select(".toggle").on("click", function(){
 		var that = $(this);
 		$(".toggle-list").slideToggle(function() { 
-			$(this).is(":visible") ? that.text("Hide") : that.text("Show");
+			$(this).is(":visible") ? that.text("Hide Instructions") : that.text("Show Instructions");
         });
 		return false;
 	});
@@ -306,18 +310,19 @@ $(document).ready(function(){
 		.entries(winners);
 
 	d3.select(".output")
-	.append("h4").text("Winnings");
+	.append("h3").text("Winnings");
 
-	d3.select(".output")
+	var utils = d3.select(".output")
 	.selectAll(".totalUtil")
 		.data(nested_data).enter()
 		.append("div")
-		.attr("class", "col-md-3")
-		.append("b").text(function(x) {return x.key})
-		.selectAll(".infos")
+		.attr("class", "col-md-3");
+
+	utils.append("b").text(function(x) {return x.key})
+	utils.selectAll(".infos")
 		.data(function(x){return x.values}).
-		enter().append("p")
-		.text(function(x){return "Item: " + x.item + " Utility: " + d3.round(x.marginalUtil, 2)});
+		enter().append("div")
+		.html(function(x){return "<h4>Item:</h4> " + x.item + '<br><span><h4">Utils:</h4><p>' + d3.round(x.marginalUtil, 2)});
 	});
 });
 </script>
